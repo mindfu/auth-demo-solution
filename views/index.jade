@@ -1,0 +1,52 @@
+extends layout
+
+title='Members'
+
+block content
+  h1 Members Area
+  p Welcome to the members area
+
+  - if (isAdmin)
+    a.btn.btn-primary(href='/users/new', role='button', style='margin-bottom:10px;') Add User
+  .table-responsive
+    table.table.table-striped.table-bordered.table-hover
+      thead
+        tr
+          th Profile Image
+          th Name
+          th Username
+          th Email
+          th Contact
+          th Role
+          th Actions
+      tbody
+        each user in users
+          tr
+            td
+              // Display profile image (assuming user.profileimage is a URL)
+              img(src=user.profileimage, alt='Profile Image', style='max-width: 50px; max-height: 50px;')
+            td= user.name
+            td= user.uname
+            td= user.email
+            td= user.contact
+            td= user.role
+            td
+              // Check if the logged-in user is an admin before displaying buttons
+              - if (isAdmin)
+                // Edit button
+                a.btn.btn-primary.btn-sm(href='/users/#{user._id}/edit', role='button', style='margin-right:10px;') Edit
+
+                // Prevent user from deleting himself
+                - if (user._id.toString() !== person._id.toString())
+                  // Delete button (triggering the form submission with onsubmit event)
+                  form.js-delete-form(action='/users/delete/#{user._id}', method='post', style='display:inline-block;')
+                    button.btn.btn-danger.btn-sm(type='submit') Delete
+
+
+block javascript
+  script.
+    $(document).ready(function() {
+      $('.js-delete-form').submit(function() {
+        return confirm('Are you sure you want to delete this user?');
+      });
+    });
